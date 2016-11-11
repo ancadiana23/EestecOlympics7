@@ -34,6 +34,7 @@ class ClientState:
 	def send(self, conn):
 		with self.lock:
 			result = bytes([self.x >> 8, self.x & 0xff, self.y >> 8, self.y & 0xff, self.s])
+		print(result)
 		conn.sendall(result)
 
 class Client(threading.Thread):
