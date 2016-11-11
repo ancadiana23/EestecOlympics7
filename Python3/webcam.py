@@ -6,7 +6,8 @@ def runWebcam():
 	i=0;
 	while(True):
 		ret, frame = cap.read()
-		cv2.imshow('Here be fingers', frame)
+		flipped = cv2.flip(frame, 1)
+		cv2.imshow('Here be fingers', flipped)
 		
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
