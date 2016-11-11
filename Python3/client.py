@@ -52,10 +52,10 @@ class Client(threading.Thread):
 			time.sleep(SERVER_STATE_UPDATE_FREQUENCY_SECONDS)
 			self.state.send(self.conn)
 
-	def update_state(self, event):
+	def update_state(self, x, y, state):
 		self.state.setState(int(x),
 							int(y),
-							MOUSE_DOWN if event.state else MOUSE_UP)
+							MOUSE_DOWN if state else MOUSE_UP)
 
 def main():
 	client = Client()
