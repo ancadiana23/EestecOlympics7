@@ -9,7 +9,7 @@ import socket
 import threading
 import time
 
-HOST = "localhost"
+HOST = "0.0.0.0"
 PORT = 10000
 SERVER_STATE_UPDATE_FREQUENCY_SECONDS = 0.01
 
@@ -35,7 +35,7 @@ class GtkGUI:
   def motion_cb(self, widget, event):
     self.client.state.setState(int(event.x),
                                int(event.y),
-                               MOUSE_DOWN if event.state else MOUSE_UP)
+                               MOUSE_DOWN if (event.state & Gdk.ModifierType.BUTTON1_MASK) else MOUSE_UP)
 
   def __init__(self):
     self.client = Client()

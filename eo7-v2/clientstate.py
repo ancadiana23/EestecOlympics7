@@ -1,8 +1,8 @@
 import threading
 import time
 
-MOUSE_UP = 1
-MOUSE_DOWN = 2
+MOUSE_UP = 0
+MOUSE_DOWN = 1
 
 class ClientState:
   def __init__(self, x, y, s):
