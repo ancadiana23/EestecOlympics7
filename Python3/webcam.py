@@ -9,19 +9,17 @@ def destroyWebcam(webcam):
 	cap.release()
 	cv2.destroyAllWindows()
 
-def runWebcam(cap, frame):
-	
+def runWebcam(cap):
+
 	ret, frame = cap.read()
 	flipped = cv2.flip(frame, 1)
 	cv2.imshow('Here be fingers', flipped)
-	
-	if cv2.waitKey(1) & 0xFF == ord('q'):
-		break
+	return flipped
 
 
 def main():
 	cap = initWebcam()
-	runWebcam(cap, frame)
+	runWebcam(cap)
 	destroyWebcam(cap)
 
 if __name__ == "__main__":
