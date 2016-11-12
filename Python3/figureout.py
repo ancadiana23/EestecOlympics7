@@ -1,6 +1,9 @@
 import random
 import time
 
+import numpy as np
+import cv2
+
 import webcam
 import client
 
@@ -12,47 +15,42 @@ def takeImage(webcamCurrent):
 def sendTo(clientCurrent, x, y, state):
 	clientCurrent.update_state(x, y, state)
 
-def isRedRegion(x, y, image):
-	return False
+def areCoordsValid(x, y):
+	return x > 0 and x < 480 and y > 0 and y < 640
 
-def isBlueAdjacent(x, y, image):
-	return False
+def isRedPixel(colors):
+	return colors[2] > 200 and colors[1] < 150 and colors[0] < 150
+
+def isBluePixel(colors):
+	return colors[0]  >= 2 * colors[2] and colors[0] >= 2 * colors[1]
 
 def findContour(x, y, image):
-	return None
-
-def processImage(image):
-	(foundx, foundy) = (None, None)
-	i = 0;
-	while foundx is None and i < 1000:
-		x = random.randint(0, 640)
-		y = random.randint(0, 480)
-		if isRedRegion(x, y, image):
-			(foundx, foundy) = (x, y)
-			break
-		++i
-
-	if foundx is None:
-		return None
-
-	contour = findCountour(foundx, foundy, image)
-
-	(pressedx, pressedy) = (None, None)
-	for (x, y) in contour:
-		if isBlueAdjacent(x, y):
-			return (x, y, 1)
-
-	return (x, y, 0)
-
-
+	gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+	blur = cv2.GaussianBlur(gray,(5,5),0)
+	thresh = cv2.adaptiveThreshold(blur,255,1,1,11,2)
+	contours = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+	cv2.drawContours(image,contours,-1,(255,255,0),-1)
+	cv2.imshow("HALP", image)
+ 	blueRect = None
+ 	redRect = None
+	# only proceed if at least one contour was found
+	if len(contours) > 0:
+		print ("LEN > 0")
+		for contour in contours:
+			(x, y, z, t) = cv2.boundingRect(contour)
+			
 
 def main():
 	random.seed(time.clock())
 	clientCurrent = client.Client()
 	webcamCurrent = webcam.initWebcam()
-	image = takeImage(webcamCurrent)
-	(x, y, state) = processImage(image)
-	sendTo(clientCurrent, x, y, state)
-
+	while True:
+		image = takeImage(webcamCurrent)
+		cv2.imshow('HALP', image)
+		findContour(0, 0, image)
+		'''if result is not None:
+			(x, y, state) = result
+			sendTo(clientCurrent, x, y, state)
+'''
 if __name__ == "__main__":
   main()

@@ -5,21 +5,30 @@ def initWebcam():
 	cap = cv2.VideoCapture(0)
 	return cap
 
-def destroyWebcam(webcam):
+def destroyWebcam(cap):
 	cap.release()
 	cv2.destroyAllWindows()
 
 def runWebcam(cap):
-
 	ret, frame = cap.read()
 	flipped = cv2.flip(frame, 1)
 	cv2.imshow('Here be fingers', flipped)
+
 	return flipped
 
 
 def main():
 	cap = initWebcam()
-	runWebcam(cap)
+	i=0
+	while(True):
+		ret, frame = cap.read()
+		flipped = cv2.flip(frame, 1)
+		cv2.imshow('Here be fingers', flipped)
+		cv2.imwrite("ref" + str(i) + ".jpg", flipped)
+		i = i+1
+		if cv2.waitKey(1) & 0xFF == ord('q'):
+			break
+
 	destroyWebcam(cap)
 
 if __name__ == "__main__":
