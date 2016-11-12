@@ -1,5 +1,10 @@
 import numpy as np
 import cv2
+from sliding_window import SlidingWindow
+
+SL = SlidingWindow()
+SL.init()
+
 cap = cv2.VideoCapture(0)
 
 while(True):
@@ -8,10 +13,12 @@ while(True):
 
     # Our operations on the frame come here
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    a, b, c = SL.detect(gray)
+    if a != -1:
+        print(a, b, c)
 
     # Display the resulting frame
     cv2.imshow('frame',frame)
-   
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
