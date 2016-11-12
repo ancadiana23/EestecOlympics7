@@ -33,7 +33,7 @@ class ClientState:
 
 	def send(self, conn):
 		with self.lock:
-			result = bytes([self.x >> 8, self.x & 0xff, self.y >> 8, self.y & 0xff, self.s])
+			result = bytearray([self.x >> 8, self.x & 0xff, self.y >> 8, self.y & 0xff, self.s])
 		print(result)
 		conn.sendall(result)
 
@@ -50,6 +50,7 @@ class Client(threading.Thread):
 		self.state.sendTeamName(self.conn, "ADA")
 		while True:
 			time.sleep(SERVER_STATE_UPDATE_FREQUENCY_SECONDS)
+			print(self.state)
 			self.state.send(self.conn)
 
 	def update_state(self, x, y, state):

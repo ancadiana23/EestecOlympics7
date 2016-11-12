@@ -7,7 +7,10 @@ import cv2
 import webcam
 import client
 
-def initOrangeBounds:
+lowerOrange = None
+upperOrange = None
+
+def initOrangeBounds():
         lowerOrange = np.uint8([[[5, 154, 222]]])
         upperOrange = np.uint8([[[7, 205, 247]]])
         lowerOrange = (cv2.cvtColor(lowerOrange, cv2.COLOR_BGR2HSV))[0][0]
@@ -34,9 +37,19 @@ def isBluePixel(colors):
 	return colors[0]  >= 2 * colors[2] and colors[0] >= 2 * colors[1]
 
 def getYellowZones(image):
+
+        lowerOrange = np.uint8([[[5, 154, 222]]])
+        upperOrange = np.uint8([[[7, 205, 247]]])
+        lowerOrange = (cv2.cvtColor(lowerOrange, cv2.COLOR_BGR2HSV))[0][0]
+        upperOrange = (cv2.cvtColor(upperOrange, cv2.COLOR_BGR2HSV))[0][0]
+        lowerOrange = [lowerOrange[0] - 5, 100, 100]
+        upperOrange = [upperOrange[0] + 10, 255, 255]
+        lowerOrange = np.array(lowerOrange, dtype = "uint8")
+        upperOrange = np.array(upperOrange, dtype = "uint8")
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, lowerOrange, upperOrange)
-        return cv2.bitwise_and(frame, frame, mask = mask)
+        return cv2.bitwise_and(image, image, mask = mask)
+
 def findContour(x, y, image):
 	gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 	blur = cv2.GaussianBlur(gray,(5,5),0)
@@ -48,31 +61,27 @@ def findContour(x, y, image):
 	redRect = None
 	# only proceed if at least one contour was found
 	if len(contours) > 0:
-		for contour in contours:
-			
-			x, y, z, t = cv2.boundingRect(contour)
-			print (x, y, z, t)
-			print(contour)
-			if isRedPixel(image[(x[0] + y[0] + z[0] + t[0]) /4, (x[1] + y[1] + z[1] + z[1])/4]):
-				redRect = (x, y, z, t)
-				break
-		
+		contour = max(contours, key=cv2.contourArea)
+		x, y, z, t = cv2.boundingRect(contour)
+		print(x, y, z, t)
+		return(x+z/2, y+t/2, 1)
 
 def main():
 	random.seed(time.clock())
 	clientCurrent = client.Client()
+	clientCurrent.start()
 	webcamCurrent = webcam.initWebcam()
 	initOrangeBounds()
 	while True:
 		image = takeImage(webcamCurrent)
 		image = getYellowZones(image)
-		findContour(0, 0, image)
+		result = findContour(0, 0, image)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
-		'''if result is not None:
+		if result is not None:
 			(x, y, state) = result
 			sendTo(clientCurrent, x, y, state)
-'''
 	webcam.destroyWebcam(webcamCurrent)
+
 if __name__ == "__main__":
   main()
