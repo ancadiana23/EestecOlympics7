@@ -7,6 +7,15 @@ import cv2
 import webcam
 import client
 
+def initOrangeBounds:
+        lowerOrange = np.uint8([[[5, 154, 222]]])
+        upperOrange = np.uint8([[[7, 205, 247]]])
+        lowerOrange = (cv2.cvtColor(lowerOrange, cv2.COLOR_BGR2HSV))[0][0]
+        upperOrange = (cv2.cvtColor(upperOrange, cv2.COLOR_BGR2HSV))[0][0]
+        lowerOrange = [lowerOrange[0] - 10, 100, 100]
+        upperOrange = [upperOrange[0] + 10, 255, 255]
+        lowerOrange = np.array(lowerOrange, dtype = "uint8")
+        upperOrange = np.array(upperOrange, dtype = "uint8")
 
 def takeImage(webcamCurrent):
 	return webcam.runWebcam(webcamCurrent)
@@ -24,6 +33,10 @@ def isRedPixel(colors):
 def isBluePixel(colors):
 	return colors[0]  >= 2 * colors[2] and colors[0] >= 2 * colors[1]
 
+def getYellowZones(image):
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(hsv, lowerOrange, upperOrange)
+        return cv2.bitwise_and(frame, frame, mask = mask)
 def findContour(x, y, image):
 	gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 	blur = cv2.GaussianBlur(gray,(5,5),0)
@@ -46,8 +59,10 @@ def main():
 	random.seed(time.clock())
 	clientCurrent = client.Client()
 	webcamCurrent = webcam.initWebcam()
+	initOrangeBounds()
 	while True:
 		image = takeImage(webcamCurrent)
+		image = getYellowZones(image)
 		findContour(0, 0, image)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
