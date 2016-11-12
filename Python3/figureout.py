@@ -63,20 +63,6 @@ def findContour(image):
 			state = 0
 		return(x+z/2, y+t/2, state)
 
-def findBlueContours(image):
-	gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-	blur = cv2.GaussianBlur(gray,(5,5),0)
-	thresh = cv2.adaptiveThreshold(blur,255,1,1,11,2)
-	contours = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
-	cv2.drawContours(image,contours,-1,(255,0,0),3)
-	cv2.imshow('HALP', image)
-	if len(contours) > 0:
-		contour = max(contours, key=cv2.contourArea)
-		x, y, z, t = cv2.boundingRect(contour)
-		if z > 25 or t > 25:
-			return True
-	return False
-
 def main():
 	isDay = True
 	clientCurrent = client.Client()
