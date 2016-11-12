@@ -7,19 +7,6 @@ import cv2
 import webcam
 import client
 
-lowerOrange = None
-upperOrange = None
-
-def initOrangeBounds():
-        lowerOrange = np.uint8([[[5, 154, 222]]])
-        upperOrange = np.uint8([[[7, 205, 247]]])
-        lowerOrange = (cv2.cvtColor(lowerOrange, cv2.COLOR_BGR2HSV))[0][0]
-        upperOrange = (cv2.cvtColor(upperOrange, cv2.COLOR_BGR2HSV))[0][0]
-        lowerOrange = [lowerOrange[0] - 10, 100, 100]
-        upperOrange = [upperOrange[0] + 10, 255, 255]
-        lowerOrange = np.array(lowerOrange, dtype = "uint8")
-        upperOrange = np.array(upperOrange, dtype = "uint8")
-
 def takeImage(webcamCurrent):
 	return webcam.runWebcam(webcamCurrent)
 
@@ -48,6 +35,19 @@ def getYellowZones(image):
         upperOrange = np.array(upperOrange, dtype = "uint8")
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, lowerOrange, upperOrange)
+        return cv2.bitwise_and(image, image, mask = mask)
+
+def getBlueZones(image):
+        lowerBlue = np.uint8([[[138, 28, 46]]])
+        upperBlue = np.uint8([[[155, 56, 74]]])
+        lowerBlue = (cv2.cvtColor(lowerBlue, cv2.COLOR_BGR2HSV))[0][0]
+        upperBlue = (cv2.cvtColor(upperBlue, cv2.COLOR_BGR2HSV))[0][0]
+        lowerBlue = [lowerBlue[0] - 5, 100, 100]
+        upperBlue = [upperBlue[0] + 10, 255, 255]
+        lowerBlue = np.array(lowerBlue, dtype = "uint8")
+        upperBlue = np.array(upperBlue, dtype = "uint8")
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(hsv, lowerBlue, upperOrange)
         return cv2.bitwise_and(image, image, mask = mask)
 
 def findContour(x, y, image):
