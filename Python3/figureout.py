@@ -34,13 +34,16 @@ def findContour(x, y, image):
 	#blueRect = None
 	redRect = None
 	# only proceed if at least one contour was found
-'''	if len(contours) > 0:
+	if len(contours) > 0:
 		for contour in contours:
-			(x, y, z, t) = cv2.boundingRect(contour)
-			if isRedPixel(image[(x[0] + y[0] + z[0] + t[0]) /4][(x[1] + y[1] + z[1] + z[1])/4]):
+			
+			x, y, z, t = cv2.boundingRect(contour)
+			print (x, y, z, t)
+			print(contour)
+			if isRedPixel(image[(x[0] + y[0] + z[0] + t[0]) /4, (x[1] + y[1] + z[1] + z[1])/4]):
 				redRect = (x, y, z, t)
 				break
-'''			
+		
 
 def main():
 	random.seed(time.clock())
