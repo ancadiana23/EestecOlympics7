@@ -41,19 +41,22 @@ def getBlueZones(image, day):
 		lowerBlue = np.uint8([[[89, 42, 22]]])
 		upperBlue = np.uint8([[[181, 96, 28]]])
 	else:
-		lowerBlue = np.uint8([[[89, 42, 22]]])
-		upperBlue = np.uint8([[[181, 96, 28]]])
+		lowerBlue = np.uint8([[[46, 35, 43]]])
+		upperBlue = np.uint8([[[78, 65, 73]]])
 
 	lowerBlue = (cv2.cvtColor(lowerBlue, cv2.COLOR_BGR2HSV))[0][0]
 	upperBlue = (cv2.cvtColor(upperBlue, cv2.COLOR_BGR2HSV))[0][0]
-	print(lowerBlue, upperBlue)
 	lower_lower_because_why_not = min(lowerBlue[0], upperBlue[0])
-	lowerBlue = [lower_lower_because_why_not - 5, 50, 50]
-	upperBlue = [upperBlue[0] - lower_lower_because_why_not + lowerBlue[0] + 10, 255, 255]
+	upperBlue[0] = upperBlue[0] + lowerBlue[0] - lower_lower_because_why_not
+	lowerBlue[0] = lower_lower_because_why_not
+	print(lowerBlue, upperBlue)
+	lowerBlue = [125 - 10, 50, 50]
+	upperBlue = [135, 255, 255]
 	lowerBlue = np.array(lowerBlue, dtype = "uint8")
 	upperBlue = np.array(upperBlue, dtype = "uint8")
 	hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 	mask = cv2.inRange(hsv, lowerBlue, upperBlue)
+	
 	return cv2.bitwise_and(image, image, mask = mask)
 
 def findContour(image):
@@ -69,8 +72,11 @@ def findContour(image):
 		contour = max(contours, key=cv2.contourArea)
 		x, y, z, t = cv2.boundingRect(contour)
 		if z < 25 or t < 25:
-			return None 
-		return(x+z/2, y+t/2)
+			return None
+		state = 0; 
+		if z < t:
+			state = 1
+		return(x+z/2, y+t/2, state)
 
 def findBlueContours(image):
 	gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
@@ -98,15 +104,16 @@ def main():
 		image2 = image.copy()
 		image = getYellowZones(image, isDay)
 		result = findContour(image)
-		state = False;
+		'''state = False;
 		image2 = getBlueZones(image2, isDay)
 		if findBlueContours(image2):
 			state = True
-		print(state)
+		'''
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
+			
 		if result is not None:
-			(x, y) = result
+			(x, y, state) = result
 			sendTo(clientCurrent, x, y, state)
 	webcam.destroyWebcam(webcamCurrent)
 
