@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 
 def initWebcam():
-	cap = cv2.VideoCapture(-1)
+	cap = cv2.VideoCapture(0)
 	return cap
 
 def destroyWebcam(cap):
