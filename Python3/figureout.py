@@ -29,16 +29,18 @@ def findContour(x, y, image):
 	blur = cv2.GaussianBlur(gray,(5,5),0)
 	thresh = cv2.adaptiveThreshold(blur,255,1,1,11,2)
 	contours = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
-	cv2.drawContours(image,contours,-1,(255,255,0),-1)
-	cv2.imshow("HALP", image)
- 	blueRect = None
- 	redRect = None
+	cv2.drawContours(image,contours,-1,(255,0,0),3)
+	cv2.imshow('HALP', image)
+	#blueRect = None
+	redRect = None
 	# only proceed if at least one contour was found
-	if len(contours) > 0:
-		print ("LEN > 0")
+'''	if len(contours) > 0:
 		for contour in contours:
 			(x, y, z, t) = cv2.boundingRect(contour)
-			
+			if isRedPixel(image[(x[0] + y[0] + z[0] + t[0]) /4][(x[1] + y[1] + z[1] + z[1])/4]):
+				redRect = (x, y, z, t)
+				break
+'''			
 
 def main():
 	random.seed(time.clock())
@@ -46,11 +48,13 @@ def main():
 	webcamCurrent = webcam.initWebcam()
 	while True:
 		image = takeImage(webcamCurrent)
-		cv2.imshow('HALP', image)
 		findContour(0, 0, image)
+		if cv2.waitKey(1) & 0xFF == ord('q'):
+			break
 		'''if result is not None:
 			(x, y, state) = result
 			sendTo(clientCurrent, x, y, state)
 '''
+	webcam.destroyWebcam(webcamCurrent)
 if __name__ == "__main__":
   main()

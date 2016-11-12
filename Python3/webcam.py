@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 
 def initWebcam():
-	cap = cv2.VideoCapture(0)
+	cap = cv2.VideoCapture(-1)
 	return cap
 
 def destroyWebcam(cap):
@@ -12,8 +12,6 @@ def destroyWebcam(cap):
 def runWebcam(cap):
 	ret, frame = cap.read()
 	flipped = cv2.flip(frame, 1)
-	cv2.imshow('Here be fingers', flipped)
-
 	return flipped
 
 
