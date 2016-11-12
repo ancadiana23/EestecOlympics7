@@ -6,8 +6,8 @@ HOST = "localhost"
 PORT = 10000
 SERVER_STATE_UPDATE_FREQUENCY_SECONDS = 0.01
 
-MOUSE_UP = 1
-MOUSE_DOWN = 2
+MOUSE_UP = 0
+MOUSE_DOWN = 1
 
 class ClientState:
 	def __init__(self, x, y, s):
@@ -28,12 +28,11 @@ class ClientState:
 
 	def sendTeamName(self, conn, name):
 		toSend = name.encode() + b'\x00'
-		print(toSend)
 		conn.sendall(toSend)
 
 	def send(self, conn):
 		with self.lock:
-			result = bytes([self.x >> 8, self.x & 0xff, self.y >> 8, self.y & 0xff, self.s])
+			result = bytearray([self.x >> 8, self.x & 0xff, self.y >> 8, self.y & 0xff, self.s])
 		conn.sendall(result)
 
 class Client(threading.Thread):
@@ -51,10 +50,10 @@ class Client(threading.Thread):
 			time.sleep(SERVER_STATE_UPDATE_FREQUENCY_SECONDS)
 			self.state.send(self.conn)
 
-	def update_state(self, event):
+	def update_state(self, x, y, state):
 		self.state.setState(int(x),
 							int(y),
-							MOUSE_DOWN if event.state else MOUSE_UP)
+							MOUSE_DOWN if state else MOUSE_UP)
 
 def main():
 	client = Client()
