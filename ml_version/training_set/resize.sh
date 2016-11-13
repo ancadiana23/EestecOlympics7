@@ -1,8 +1,8 @@
 #!/bin/bash
-for i in 1 2
+for file in *.jpg
 do
-	for file in $i/*.jpg
-	do
-		convert $file -colorspace Gray $file
-	done
+	echo $file
+	convert $file -resize 20x30! $file
+	convert $file -colorspace Gray $file
 done
+
