@@ -36,6 +36,8 @@ class ClientState:
 		conn.sendall(result)
 
 class Client(threading.Thread):
+	stopThread = False
+	
 	def __init__(self):
 		global HOST, PORT
 		super(Client, self).__init__()
@@ -46,7 +48,7 @@ class Client(threading.Thread):
 	def run(self):
 		global SERVER_STATE_UPDATE_FREQUENCY_SECONDS
 		self.state.sendTeamName(self.conn, "ADA")
-		while True:
+		while not self.stopThread:
 			time.sleep(SERVER_STATE_UPDATE_FREQUENCY_SECONDS)
 			self.state.send(self.conn)
 
@@ -54,10 +56,15 @@ class Client(threading.Thread):
 		self.state.setState(int(x),
 							int(y),
 							MOUSE_DOWN if state else MOUSE_UP)
+							
+	def stop(self):
+		self.stopThread = True
+		
 
 def main():
 	client = Client()
 	client.start()
+	client.join()
 
 
 if __name__ == "__main__":
